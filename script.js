@@ -6,12 +6,12 @@ const incomeDisplay = document.querySelector('#money-plus');
 const expenseDisplay = document.querySelector('#money-minus');
 
 //objeto literal ficticio
-let dummyTransactions = [
-    {id: 1, name: 'Bolo de brigadeiro', amount: -20},
-    {id: 2, name: 'Salario', amount: 300},
-    {id: 3, name: 'Torta de frango', amount: -10},
-    {id: 4, name: 'Violão', amount: 150}
-]
+// let dummyTransactions = [
+//     {id: 1, name: 'Bolo de brigadeiro', amount: -20},
+//     {id: 2, name: 'Salario', amount: 300},
+//     {id: 3, name: 'Torta de frango', amount: -10},
+//     {id: 4, name: 'Violão', amount: 150}
+// ]
 
 //gerador de id numero aleatorio
 const geradorID = () => Math.round(Math.random() * 1000);
@@ -34,22 +34,31 @@ const handleFormSubmit = event => {
 
     addTransactionArray(inputTransactionName, inputTransactionAmount);
     init();
+    cleanInputs();
 } 
+
+const cleanInputs = () => {
+    inputTransactionName.value = '';
+    inputTransactionAmount.value = '';
+}
 
 form.addEventListener("submit", handleFormSubmit);
 
 const addTransactionsIntoDOM = (transaction) => {
     const li = document.createElement('li');
+    //condicao na linha ou if ternario
+    const operator = transaction.amount < 0 ? '-' : '+';
+    const cssClass = transaction.amount < 0 ? 'money.minus' : 'money.plus';
+
+    const amountWithoutOperator = Math.abs(transaction.amount);
     
     li.innerHTML = `
         ${transaction.name}
-        <span> ${transaction.amount} </span>
-        <button onClick="removeTransaction(${transaction.id})">X</button>
+        <span>  ${operator} ${amountWithoutOperator.toLocaleString('pt-br', {style:'currency', currency:'BRL'})} </span>
+        <button class="delete-btn" onClick="removeTransaction(${transaction.id})">X</button>
     `;
     //atribuindo um nó para o li
     transactionsUl.appendChild(li);
-
-    console.log(dummyTransactions);
 }
 
 
@@ -59,18 +68,12 @@ const updateBalanceValues = () => {
 
     //pega todos os valores amount de cada linha do array
     const transactionAmounts = dummyTransactions.map(({ amount }) => amount)
-    console.log(transactionAmounts);
+
 
     //totalizador
     const total = transactionAmounts.reduce((accumulator, transaction) => accumulator + transaction,0);
-    console.log('Soma dos valores: ' + total);
-    total.toLocaleString('pt-br', {style:'currency', currency:'BRL'});
-
     const income = transactionAmounts.filter(value => value > 0).reduce((accumulator, transaction) => accumulator + transaction, 0);
-    console.log('Somente os valores positivos ' + income);
-
     const expense = transactionAmounts.filter(value => value < 0).reduce((accumulator, transaction) => accumulator + transaction,0);
-    console.log('Some os valores negativos: '+ expense);
 
     balanceDisplay.textContent = total.toLocaleString('pt-br', {style:'currency', currency:'BRL'});
     incomeDisplay.textContent = income.toLocaleString('pt-br', {style:'currency', currency:'BRL'});
@@ -80,7 +83,7 @@ const updateBalanceValues = () => {
 
 const removeTransaction = ID => {
     dummyTransactions = dummyTransactions.filter(transactions => transactions.id !== ID);
-    console.log(dummyTransactions);
+
 
     init();
 }
