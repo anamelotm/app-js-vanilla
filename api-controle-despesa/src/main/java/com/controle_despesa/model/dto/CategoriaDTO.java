@@ -3,7 +3,6 @@ package com.controle_despesa.model.dto;
 import com.controle_despesa.model.entity.Categoria;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
